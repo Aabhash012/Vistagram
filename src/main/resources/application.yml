@@ -1,1 +1,33 @@
-spring.application.name=vistagram
+spring:
+  application:
+    name: vistagram
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vistagram
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+    initialization-mode: always  # Enables schema.sql execution
+  sql:
+    init:
+      mode: always              # Always initialize the database
+  jpa:
+    hibernate:
+      ddl-auto: none           # Disable Hibernate schema generation
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true  # Wait for schema.sql before Hibernate
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+app:
+  file:
+    upload-dir: uploads
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    com.example.vistagram: DEBUG

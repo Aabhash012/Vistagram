@@ -1,6 +1,16 @@
 package com.vistagram.app.api.shell;
 
+import com.vistagram.app.domain.PostDto;
+import com.vistagram.app.service.Interface.PostService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import static com.vistagram.app.utils.Constants.ApiRoutes.API_SHELL_POST;
+import static com.vistagram.app.utils.Constants.ApiRoutes.GET_POST;
 
 @RestController
 @RequiredArgsConstructor
@@ -9,7 +19,7 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping(CREATE_POST)
+    //@PostMapping(CREATE_POST)
     public ResponseEntity<PostDto> createPost(
             @RequestParam("image") MultipartFile image,
             @RequestParam("caption") String caption,
@@ -23,7 +33,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(postDto);
     }
 
-    @GetMapping(GET_TIMELINE)
+    //@GetMapping(GET_TIMELINE)
     public ResponseEntity<Page<PostDto>> getTimeline(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
