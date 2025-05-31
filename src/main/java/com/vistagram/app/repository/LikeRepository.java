@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
+
     Optional<Like> findByUserAndPost(User user, Post post);
     Boolean existsByUserAndPost(User user, Post post);
     Long countByPost(Post post);

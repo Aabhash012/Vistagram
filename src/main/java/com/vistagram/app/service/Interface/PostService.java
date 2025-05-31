@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface PostService {
+
     PostDto createPost(MultipartFile image, String caption, String poiName, String poiLocation, Long userId);
     Page<PostDto> getTimeline(int page, int size, Long currentUserId);
     PostDto getPostById(Long postId);

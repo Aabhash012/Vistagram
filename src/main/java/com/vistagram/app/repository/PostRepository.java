@@ -11,8 +11,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    Page<Post> findByUser(User user, Pageable pageable);
 
+    Page<Post> findByUser(User user, Pageable pageable);
     @Query("SELECT p FROM Post p WHERE " +
             "LOWER(p.caption) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(p.poiName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +

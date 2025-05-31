@@ -13,7 +13,6 @@ public class PostMapper {
     private final ModelMapper modelMapper;
     public PostDto mapToDto(Post post, Long currentUserId) {
         PostDto postDto = modelMapper.map(post, PostDto.class);
-
         // Manually set values that ModelMapper cannot auto-map
         postDto.setUsername(post.getUser().getUsername());
         postDto.setLikeCount(post.getLikes().size());
@@ -22,7 +21,6 @@ public class PostMapper {
         boolean likedByCurrentUser = post.getLikes().stream()
                 .anyMatch(like -> like.getUser().getId().equals(currentUserId));
         postDto.setLikedByCurrentUser(likedByCurrentUser);
-
         return postDto;
     }
 }

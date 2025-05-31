@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 public interface ShareRepository extends JpaRepository<Share, Long> {
-    Long countByPost(Post post);
 
+    Long countByPost(Post post);
     @Query("SELECT s.post.id FROM Share s WHERE s.user.id = :userId")
     Page<Long> findSharedPostIdsByUserId(@Param("userId") Long userId, Pageable pageable);
 }

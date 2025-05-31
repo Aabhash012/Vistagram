@@ -15,5 +15,4 @@ public class VistagramApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(VistagramApplication.class, args);
 	}
-
 }
