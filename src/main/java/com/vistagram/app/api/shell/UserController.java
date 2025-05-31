@@ -3,6 +3,7 @@ package com.vistagram.app.api.shell;
 import com.vistagram.app.domain.UserDto;
 import com.vistagram.app.domain.UserUpdateDto;
 import com.vistagram.app.service.Interface.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class UserController {
     @PutMapping(UPDATE_USER_PROFILE)
     public ResponseEntity<UserDto> updateUserProfile(
             @PathVariable Long userId,
-            @RequestBody UserUpdateDto userUpdateDto) {
+            @Valid @RequestBody UserUpdateDto userUpdateDto) {
 
         UserDto updatedUser = userService.updateUserProfile(userId, userUpdateDto);
         return ResponseEntity.ok(updatedUser);
