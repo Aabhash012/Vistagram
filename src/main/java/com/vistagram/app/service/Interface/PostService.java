@@ -1,4 +1,5 @@
 package com.vistagram.app.service.Interface;
+
 import com.vistagram.app.domain.PostDto;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;

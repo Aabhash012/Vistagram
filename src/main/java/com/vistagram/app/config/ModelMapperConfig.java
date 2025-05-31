@@ -8,7 +8,6 @@ import org.modelmapper.convention.MatchingStrategies;
 
 @Configuration
 public class ModelMapperConfig {
-
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();

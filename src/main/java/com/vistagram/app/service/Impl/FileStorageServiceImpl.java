@@ -1,6 +1,5 @@
 package com.vistagram.app.service.Impl;
 
-
 import com.vistagram.app.config.FileStorageProperties;
 import com.vistagram.app.exception.FileNotFoundException;
 import com.vistagram.app.exception.FileStorageException;
@@ -21,8 +20,8 @@ import java.util.UUID;
 
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
-    private final Path fileStorageLocation;
 
+    private final Path fileStorageLocation;
     @Autowired
     public FileStorageServiceImpl(FileStorageProperties fileStorageProperties) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())

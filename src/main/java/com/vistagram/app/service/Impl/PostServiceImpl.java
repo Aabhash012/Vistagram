@@ -1,6 +1,6 @@
 package com.vistagram.app.service.Impl;
-import com.vistagram.app.domain.PostDto;
 
+import com.vistagram.app.domain.PostDto;
 import com.vistagram.app.mapper.PostMapper;
 import com.vistagram.app.repository.PostRepository;
 import com.vistagram.app.repository.UserRepository;
@@ -9,7 +9,10 @@ import com.vistagram.app.repository.entity.User;
 import com.vistagram.app.service.Interface.PostService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.vistagram.app.exception.ResourceNotFoundException;
@@ -19,6 +22,7 @@ import com.vistagram.app.exception.UnauthorizedException;
 @Transactional
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
+
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final FileStorageServiceImpl fileStorageService;

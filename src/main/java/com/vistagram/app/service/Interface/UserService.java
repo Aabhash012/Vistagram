@@ -1,4 +1,5 @@
 package com.vistagram.app.service.Interface;
+
 import com.vistagram.app.domain.UserDto;
 import com.vistagram.app.domain.UserUpdateDto;
 import org.springframework.data.domain.Page;

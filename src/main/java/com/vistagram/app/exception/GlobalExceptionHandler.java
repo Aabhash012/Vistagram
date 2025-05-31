@@ -1,5 +1,5 @@
 package com.vistagram.app.exception;
-import lombok.*;
+
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

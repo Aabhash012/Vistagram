@@ -1,5 +1,10 @@
 package com.vistagram.app.domain;
-import lombok.*;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Getter
@@ -8,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UserDto {
+
     private Long id;
     private String username;
     private LocalDateTime createdAt;

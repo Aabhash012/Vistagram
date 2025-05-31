@@ -24,6 +24,7 @@ import com.vistagram.app.exception.ResourceNotFoundException;
 @Transactional
 @RequiredArgsConstructor
 public class ShareServiceImpl implements ShareService {
+
     private final ShareRepository shareRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
