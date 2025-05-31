@@ -1,5 +1,6 @@
 package com.vistagram.app.service.Impl;
 
+import com.vistagram.app.mapper.PostMapper;
 import com.vistagram.app.repository.ShareRepository;
 import com.vistagram.app.repository.entity.Share;
 import com.vistagram.app.service.Interface.ShareService;
@@ -10,7 +11,6 @@ import com.vistagram.app.repository.entity.Post;
 import com.vistagram.app.repository.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +20,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.vistagram.app.exception.ResourceNotFoundException;
-import com.vistagram.app.exception.UnauthorizedException;
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class ShareServiceImpl implements ShareService {
     private final ShareRepository shareRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+    private final PostMapper postMapper;
 
     @Override
     public String sharePost(Long postId, Long userId) {
@@ -59,19 +58,10 @@ public class ShareServiceImpl implements ShareService {
 
         List<Post> posts = postRepository.findAllById(postIds.getContent());
         posts.sort(Comparator.comparing(Post::getCreatedAt).reversed());
+        List<PostDto> postDtos = posts.stream()
+                .map(post -> postMapper.mapToDto(post, userId))
+                .collect(Collectors.toList());
 
-        return new PageImpl<>(
-                posts.stream()
-                        .map(post -> {
-                            PostDto dto = modelMapper.map(post, PostDto.class);
-                            dto.setUsername(post.getUser().getUsername());
-                            dto.setLikeCount(post.getLikes().size());
-                            dto.setShareCount(post.getShares().size());
-                            return dto;
-                        })
-                        .collect(Collectors.toList()),
-                pageable,
-                postIds.getTotalElements()
-        );
+        return new PageImpl<>(postDtos, pageable, postIds.getTotalElements());
     }
 }

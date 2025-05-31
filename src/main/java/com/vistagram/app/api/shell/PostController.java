@@ -32,9 +32,10 @@ public class PostController {
     //@GetMapping(GET_TIMELINE)
     public ResponseEntity<Page<PostDto>> getTimeline(
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam("currentUserId") Long currentUserId) {
 
-        Page<PostDto> posts = postService.getTimeline(page, size);
+        Page<PostDto> posts = postService.getTimeline(page, size, currentUserId);
         return ResponseEntity.ok(posts);
     }
     @GetMapping(GET_POST)

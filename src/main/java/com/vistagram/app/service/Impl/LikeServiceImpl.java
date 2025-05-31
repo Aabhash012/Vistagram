@@ -2,6 +2,7 @@ package com.vistagram.app.service.Impl;
 
 import com.vistagram.app.domain.PostDto;
 import com.vistagram.app.exception.ResourceNotFoundException;
+import com.vistagram.app.mapper.PostMapper;
 import com.vistagram.app.repository.LikeRepository;
 import com.vistagram.app.repository.PostRepository;
 import com.vistagram.app.repository.UserRepository;
@@ -12,7 +13,6 @@ import com.vistagram.app.service.Interface.LikeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import com.vistagram.app.exception.BadRequestException;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +29,7 @@ public class LikeServiceImpl implements LikeService {
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+    private final PostMapper postMapper;
 
     @Override
     public void likePost(Long postId, Long userId) {
@@ -86,19 +86,9 @@ public class LikeServiceImpl implements LikeService {
 
         List<Post> posts = postRepository.findAllById(postIds.getContent());
         posts.sort(Comparator.comparing(Post::getCreatedAt).reversed());
-
-        return new PageImpl<>(
-                posts.stream()
-                        .map(post -> {
-                            PostDto dto = modelMapper.map(post, PostDto.class);
-                            dto.setUsername(post.getUser().getUsername());
-                            dto.setLikeCount(post.getLikes().size());
-                            dto.setShareCount(post.getShares().size());
-                            return dto;
-                        })
-                        .collect(Collectors.toList()),
-                pageable,
-                postIds.getTotalElements()
-        );
+        List<PostDto> postDtos = posts.stream()
+                .map(post -> postMapper.mapToDto(post, userId))
+                .collect(Collectors.toList());
+        return new PageImpl<>(postDtos, pageable, postIds.getTotalElements());
     }
 }
