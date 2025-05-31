@@ -4,17 +4,13 @@ import com.vistagram.app.repository.ShareRepository;
 import com.vistagram.app.repository.entity.Share;
 import com.vistagram.app.service.Interface.ShareService;
 import com.vistagram.app.domain.PostDto;
-import com.vistagram.app.repository.LikeRepository;
 import com.vistagram.app.repository.PostRepository;
 import com.vistagram.app.repository.UserRepository;
-import com.vistagram.app.repository.entity.Like;
 import com.vistagram.app.repository.entity.Post;
 import com.vistagram.app.repository.entity.User;
-import com.vistagram.app.service.Interface.LikeService;
-import com.vistagram.app.service.Interface.PostService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +19,8 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.vistagram.app.exception.ResourceNotFoundException;
+import com.vistagram.app.exception.UnauthorizedException;
 @Service
 @Transactional
 @RequiredArgsConstructor

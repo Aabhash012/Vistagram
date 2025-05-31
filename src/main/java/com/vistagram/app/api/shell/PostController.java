@@ -8,9 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import static com.vistagram.app.utils.Constants.ApiRoutes.API_SHELL_POST;
-import static com.vistagram.app.utils.Constants.ApiRoutes.GET_POST;
+import static com.vistagram.app.utils.Constants.ApiRoutes.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,11 +23,9 @@ public class PostController {
             @RequestParam("caption") String caption,
             @RequestParam(value = "poiName", required = false) String poiName,
             @RequestParam(value = "poiLocation", required = false) String poiLocation,
-            @AuthenticationPrincipal UserPrincipal currentUser) {
+            @RequestParam("userId") Long userId) {
 
-        PostDto postDto = postService.createPost(
-                image, caption, poiName, poiLocation, currentUser.getId());
-
+        PostDto postDto = postService.createPost(image, caption, poiName, poiLocation, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(postDto);
     }
 
@@ -45,5 +41,33 @@ public class PostController {
     public ResponseEntity<PostDto> getPost(@PathVariable Long postId) {
         PostDto postDto = postService.getPostById(postId);
         return ResponseEntity.ok(postDto);
+    }
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Page<PostDto>> getUserPosts(
+            @PathVariable Long userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Page<PostDto> posts = postService.getUserPosts(userId, page, size);
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping(SEARCH_POST)
+    public ResponseEntity<Page<PostDto>> searchPosts(
+            @RequestParam("query") String query,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Page<PostDto> results = postService.searchPosts(query, page, size);
+        return ResponseEntity.ok(results);
+    }
+
+    @DeleteMapping(DELETE_POST)
+    public ResponseEntity<Void> deletePost(
+            @PathVariable Long postId,
+            @RequestParam("userId") Long userId) {
+
+        postService.deletePost(postId, userId);
+        return ResponseEntity.noContent().build();
     }
 }

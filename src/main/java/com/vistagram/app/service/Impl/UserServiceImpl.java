@@ -7,13 +7,14 @@ import com.vistagram.app.repository.UserRepository;
 import com.vistagram.app.repository.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.vistagram.app.exception.ResourceNotFoundException;
+import com.vistagram.app.exception.BadRequestException;
 
-public class UserServiceImpl {
     @Service
     @Transactional
     @RequiredArgsConstructor
@@ -54,4 +55,3 @@ public class UserServiceImpl {
                     .map(user -> modelMapper.map(user, UserDto.class));
         }
     }
-}

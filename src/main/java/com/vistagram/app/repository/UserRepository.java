@@ -1,6 +1,4 @@
 package com.vistagram.app.repository;
-import com.vistagram.app.repository.entity.Like;
-import com.vistagram.app.repository.entity.Post;
 import com.vistagram.app.repository.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

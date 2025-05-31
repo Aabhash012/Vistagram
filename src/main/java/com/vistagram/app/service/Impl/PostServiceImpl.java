@@ -8,9 +8,12 @@ import com.vistagram.app.repository.entity.User;
 import com.vistagram.app.service.Interface.PostService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.vistagram.app.exception.ResourceNotFoundException;
+import com.vistagram.app.exception.UnauthorizedException;
 
 @Service
 @Transactional
@@ -18,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final FileStorageService fileStorageService;
+    private final FileStorageServiceImpl fileStorageService;
     private final ModelMapper modelMapper;
 
     @Override

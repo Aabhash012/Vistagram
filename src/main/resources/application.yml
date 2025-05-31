@@ -31,3 +31,6 @@ logging:
   level:
     org.springframework.web: DEBUG
     com.example.vistagram: DEBUG
+
+file:
+  upload-dir: uploads

@@ -1,6 +1,7 @@
 package com.vistagram.app.service.Impl;
 
 import com.vistagram.app.domain.PostDto;
+import com.vistagram.app.exception.ResourceNotFoundException;
 import com.vistagram.app.repository.LikeRepository;
 import com.vistagram.app.repository.PostRepository;
 import com.vistagram.app.repository.UserRepository;
@@ -8,10 +9,10 @@ import com.vistagram.app.repository.entity.Like;
 import com.vistagram.app.repository.entity.Post;
 import com.vistagram.app.repository.entity.User;
 import com.vistagram.app.service.Interface.LikeService;
-import com.vistagram.app.service.Interface.PostService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
+import com.vistagram.app.exception.BadRequestException;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
