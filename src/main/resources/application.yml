@@ -30,7 +30,7 @@ app:
 logging:
   level:
     org.springframework.web: DEBUG
-    com.example.vistagram: DEBUG
+    com.example.vistagram: TRACE
 
 file:
   upload-dir: uploads
