@@ -54,8 +54,38 @@ Vistagram is a social media backend API built using **Java Spring Boot**. It all
 | Object Mapping| ModelMapper |
 
 ---
+### 🔧 Steps to Run the Project:
+1. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/Aabhash012/Vistagram.git
+   cd vistagram
+2. **Configure the Database**
+   Update application.yml with your DB credentials:
+3. **Build the Project**
+    ```bash
+    mvn clean install
+    ```    
+4. **Run the Application**
+    ```bash
+    mvn spring-boot:run
+    ``` 
+5. **Access the API**
+
+   Base URL: http://localhost:8080/api/v1/
+
+    Example endpoint: GET /api/v1/post/{postId}
+
+
+6. **Test with Postman**
+
+    Use @RequestParam for multipart uploads.
+
+   Pagination is supported using ?page=0&size=10
+
 
 ---
+
 
 ## ✅ Future Improvements
 
