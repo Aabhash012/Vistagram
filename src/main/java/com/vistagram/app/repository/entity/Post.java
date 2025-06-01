@@ -10,7 +10,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import lombok.Getter;

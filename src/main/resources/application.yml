@@ -6,10 +6,10 @@ spring:
     username: postgres
     password: Vistagram@12
     driver-class-name: org.postgresql.Driver
-    initialization-mode: always  # Enables schema.sql execution
+    initialization-mode: never  # Enables schema.sql execution
   sql:
     init:
-      mode: always              # Always initialize the database
+      mode: never         # Always initialize the database
   jpa:
     hibernate:
       ddl-auto: none           # Disable Hibernate schema generation
@@ -17,7 +17,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    defer-datasource-initialization: true  # Wait for schema.sql before Hibernate
+    defer-datasource-initialization: false  # Wait for schema.sql before Hibernate
   servlet:
     multipart:
       max-file-size: 10MB
