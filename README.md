@@ -35,8 +35,11 @@ Vistagram is a social media backend API built using **Java Spring Boot**. It all
 - View all posts shared by a user
 
 ### 🧪 Data Seeding (Dev Utility)
-- Seed the database with realistic test posts from a JSON file
-- Automatically creates new users if they don’t exist
+- A Python script is used to generate a synthetic dataset, producing realistic captions, usernames, timestamps, and image URLs.
+- Once the seed dataset is generated, the output is copied into the Spring Boot project at: src/main/resources/seed-data.json
+- On application startup, the DataSeeder component reads the seed-data.json file.
+- Posts are created only if the database is empty to avoid duplication.
+- For each post in the dataset, if the username doesn’t already exist, a new user is created and associated with the post.
 
 ---
 
@@ -85,7 +88,14 @@ Vistagram is a social media backend API built using **Java Spring Boot**. It all
 
 
 ---
+✅ Test Coverage
 
+Vistagram includes unit test cases for core service and controller layers to ensure functionality and stability.
+Tests are written using JUnit and Mockito, covering scenarios like:
+
+The tests help validate business logic and provide confidence during future refactoring or feature additions.
+
+---
 
 ## ✅ Future Improvements
 
