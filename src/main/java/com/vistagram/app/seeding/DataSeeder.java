@@ -29,20 +29,17 @@ public class DataSeeder {
     @Transactional
     public void seedData() {
         try {
-            // 1. File existence check
             Resource resource = new ClassPathResource("seed-data.json");
             if (!resource.exists()) {
                 log.info("No seed file found - skipping");
                 return;
             }
 
-            // 2. Empty file check
             if (resource.contentLength() == 0) {
                 log.warn("Empty seed file detected");
                 return;
             }
 
-            // 3. Read and validate
             SeedPostDto[] seeds = objectMapper.readValue(
                     resource.getInputStream(),
                     SeedPostDto[].class);
@@ -52,8 +49,7 @@ public class DataSeeder {
                 return;
             }
 
-            // 4. Proceed only if DB is empty
-            if (postRepo.count() == 0) {
+            if (postRepo.count() == 0 && userRepo.count() == 0) {
                 seedUsersAndPosts(seeds);
             }
         } catch (Exception e) {
@@ -61,7 +57,6 @@ public class DataSeeder {
         }
     }
     private void seedUsersAndPosts(SeedPostDto[] seeds) {
-        // Builder pattern for both
         Map<String, User> userMap = Arrays.stream(seeds)
                 .map(SeedPostDto::getUsername)
                 .distinct()
