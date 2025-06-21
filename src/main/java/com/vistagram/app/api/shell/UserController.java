@@ -41,7 +41,8 @@ public class UserController {
             @Valid @RequestBody UpdateUserRequest updateUserRequest) {
 
         UpdateUserDto updateUserDto = UpdateUserRequest.toDto(updateUserRequest);
-        UserDto updatedUserDetails = userService.updateUserProfile(userId, updateUserDto);
+        updateUserDto.setUserID(userId);
+        UserDto updatedUserDetails = userService.updateUserProfile( updateUserDto);
         UserDetailResponse updatedUserDetailResponse = UserDetailResponse.fromUserDto(updatedUserDetails);
         return ResponseEntity.ok(updatedUserDetailResponse);
     }

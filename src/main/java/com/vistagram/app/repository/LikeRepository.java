@@ -13,7 +13,8 @@ import java.util.Optional;
 public interface LikeRepository extends JpaRepository<Like, Long> {
 
     Optional<Like> findByUserAndPost(User user, Post post);
-    Boolean isAlreadyLiked(Long userId, Long postId);
+
+    Boolean existsByUserIdAndPostId(Long userId, Long postId);
     Long countByPost(Post post);
 
     @Query("SELECT l.post.id FROM Like l WHERE l.user.id = :userId")

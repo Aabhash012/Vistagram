@@ -25,17 +25,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserProfile(Long userId) {
+
         User user = baseService.getUserOrThrow(userId);
         return userMapper.mapToDto(user);
     }
 
     @Override
-    public UserDto updateUserProfile(Long userId, UpdateUserDto updateUserDto) {
+    public UserDto updateUserProfile(UpdateUserDto updateUserDto) {
 
-        if (updateUserDto == null) {
-            throw new BadRequestException("Update data cannot be null");
-        }
-        User user = baseService.getUserOrThrow(userId);
+        validateUpdateRequest(updateUserDto);
+        User user = baseService.getUserOrThrow(updateUserDto.getUserID());
         boolean updated = applyUserUpdates(user, updateUserDto);
         if (!updated) {
             return userMapper.mapToDto(user); // No changes, return as-is
@@ -46,6 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserDto> searchUsers(String query, int page, int size) {
+
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.searchByUsername(query, pageable)
                 .map(userMapper::mapToDto);
@@ -61,5 +61,10 @@ public class UserServiceImpl implements UserService {
             updated = true;
         }
         return updated;
+    }
+    private void validateUpdateRequest(UpdateUserDto updateUserDto) {
+        if (updateUserDto == null) {
+            throw new BadRequestException("Update user request cannot be null.");
+        }
     }
 }

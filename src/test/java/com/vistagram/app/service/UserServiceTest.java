@@ -71,7 +71,7 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        UserDto result = userService.updateUserProfile(1L, updateDto);
+        UserDto result = userService.updateUserProfile(updateDto);
 
         // Assert
         assertEquals("newname", result.getUsername());
@@ -90,7 +90,7 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
         when(userRepository.existsByUsername("takenname")).thenReturn(true);
 
-        assertThrows(BadRequestException.class, () -> userService.updateUserProfile(1L, updateDto));
+        assertThrows(BadRequestException.class, () -> userService.updateUserProfile(updateDto));
     }
 
     @Test

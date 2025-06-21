@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class UserDetailResponse {
+
     private Long id;
     private String userName;
     private LocalDateTime createdAt;

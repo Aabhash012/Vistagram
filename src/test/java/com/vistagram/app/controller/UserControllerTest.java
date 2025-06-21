@@ -51,7 +51,7 @@ class UserControllerTest extends ControllerTestBase {
                 .username("newusername")
                 .build();
 
-        given(userService.updateUserProfile(eq(1L), any(UpdateUserDto.class)))
+        given(userService.updateUserProfile(any(UpdateUserDto.class)))
                 .willReturn(userDto);
 
         mockMvc.perform(put("/api/users/1")

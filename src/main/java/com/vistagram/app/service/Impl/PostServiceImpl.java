@@ -4,7 +4,6 @@ import com.vistagram.app.domain.PostDto;
 import com.vistagram.app.exception.BadRequestException;
 import com.vistagram.app.mapper.PostMapper;
 import com.vistagram.app.repository.PostRepository;
-import com.vistagram.app.repository.UserRepository;
 import com.vistagram.app.repository.entity.Post;
 import com.vistagram.app.repository.entity.User;
 import com.vistagram.app.service.Interface.PostService;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.vistagram.app.exception.ResourceNotFoundException;
 import com.vistagram.app.exception.UnauthorizedException;
 
 @Service
@@ -32,10 +30,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto createPost(MultipartFile image, String caption, String poiName, String poiLocation, Long userId) {
 
-        if (image == null || image.isEmpty()) {
-            throw new BadRequestException("Image file is required to create a post.");
-        }
-
+        validateImageFile(image);
         User user = baseService.getUserOrThrow(userId);
         String imageUrl = fileStorageService.storeFile(image);
         Post post = buildPost(user, imageUrl, caption, poiName, poiLocation);
@@ -45,6 +40,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostDto> getTimeline(int page, int size, Long currentUserId) {
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return postRepository.findAllByOrderByCreatedAtDesc(pageable)
                 .map(post -> postMapper.mapToDto(post, currentUserId));
@@ -52,12 +48,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto getPostById(Long postId) {
+
         Post post = baseService.getPostOrThrow(postId);
         return postMapper.mapToDto(post, null);
     }
 
     @Override
     public Page<PostDto> getUserPosts(Long userId, int page, int size) {
+
         User user = baseService.getUserOrThrow(userId);
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return postRepository.findByUser(user, pageable)
@@ -66,6 +64,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostDto> searchPosts(String query, int page, int size) {
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return postRepository.searchPosts(query, pageable)
                 .map(post -> postMapper.mapToDto(post, null));
@@ -73,10 +72,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(Long postId, Long userId) {
+
         Post post = baseService.getPostOrThrow(postId);
-        if (!post.getUser().getId().equals(userId)) {
-            throw new UnauthorizedException("You are not authorized to delete this post");
-        }
+        validatePostOwnership(post, userId);
         fileStorageService.deleteFile(post.getImageUrl());
         postRepository.delete(post);
     }
@@ -88,5 +86,15 @@ public class PostServiceImpl implements PostService {
                 .poiName(poiName)
                 .poiLocation(poiLocation)
                 .build();
+    }
+    private void validateImageFile(MultipartFile image) {
+        if (image == null || image.isEmpty()) {
+            throw new BadRequestException("Image file is required to create a post.");
+        }
+    }
+    private void validatePostOwnership(Post post, Long userId) {
+        if (!post.getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("You are not authorized to delete this post");
+        }
     }
 }

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class PostDetailResponse {
+
     private Long id;
     private String username;
     private String imageUrl;
@@ -20,7 +21,6 @@ public class PostDetailResponse {
     private int likeCount;
     private int shareCount;
     private boolean likedByCurrentUser;
-
 
     public static PostDetailResponse fromPostDto(PostDto postDto){
         return PostDetailResponse.builder()

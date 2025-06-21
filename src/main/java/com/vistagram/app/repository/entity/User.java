@@ -40,7 +40,6 @@ public class User {
     @Builder.Default
     private List<Post> posts = new ArrayList<>();
 
-    // Convenience method
     public void addPost(Post post) {
         posts.add(post);
         post.setUser(this);

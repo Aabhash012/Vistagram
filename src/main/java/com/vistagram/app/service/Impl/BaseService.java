@@ -8,11 +8,12 @@ import com.vistagram.app.repository.entity.Like;
 import com.vistagram.app.repository.entity.Post;
 import com.vistagram.app.repository.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public abstract class BaseService {
+public class BaseService {
 
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;

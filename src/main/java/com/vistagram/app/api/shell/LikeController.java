@@ -23,6 +23,7 @@ import static com.vistagram.app.utils.Constants.ApiRoutes.Like.UNLIKE_POST;
 @RequiredArgsConstructor
 @RequestMapping(LIKE_SHELL)
 public class LikeController {
+
     private final LikeService likeService;
 
     @PostMapping(LIKE_POST)

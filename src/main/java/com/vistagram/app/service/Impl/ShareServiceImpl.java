@@ -6,7 +6,6 @@ import com.vistagram.app.repository.entity.Share;
 import com.vistagram.app.service.Interface.ShareService;
 import com.vistagram.app.domain.PostDto;
 import com.vistagram.app.repository.PostRepository;
-import com.vistagram.app.repository.UserRepository;
 import com.vistagram.app.repository.entity.Post;
 import com.vistagram.app.repository.entity.User;
 import jakarta.transaction.Transactional;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.vistagram.app.exception.ResourceNotFoundException;
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -32,15 +30,14 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     public String sharePost(Long postId, Long userId) {
+
         Post post = baseService.getPostOrThrow(postId);
         User user = baseService.getUserOrThrow(userId);
-
         Share share = buildShare(user,post);
+        post.addShare(share);
         shareRepository.save(share);
-        post.setShareCount(post.getShareCount() + 1);
         postRepository.save(post);
-        // Generate a shareable link
-        return "https://vistagram.app/posts/" + postId;
+        return generateShareLink(postId);
     }
 
     @Override
@@ -49,13 +46,11 @@ public class ShareServiceImpl implements ShareService {
         User user = baseService.getUserOrThrow(userId);
         Pageable pageable = PageRequest.of(page, size);
         Page<Long> postIds = shareRepository.findSharedPostIdsByUserId(userId, pageable);
-
         List<Post> posts = postRepository.findAllById(postIds.getContent());
         posts.sort(Comparator.comparing(Post::getCreatedAt).reversed());
         List<PostDto> postDtos = posts.stream()
                 .map(post -> postMapper.mapToDto(post, userId))
                 .collect(Collectors.toList());
-
         return new PageImpl<>(postDtos, pageable, postIds.getTotalElements());
     }
     private Share buildShare(User user, Post post) {
@@ -63,5 +58,8 @@ public class ShareServiceImpl implements ShareService {
                 .user(user)
                 .post(post)
                 .build();
+    }
+    private String generateShareLink(Long postId) {
+        return "https://vistagram.app/posts/" + postId;
     }
 }

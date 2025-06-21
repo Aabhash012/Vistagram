@@ -7,6 +7,6 @@ import org.springframework.data.domain.Page;
 public interface UserService {
 
     UserDto getUserProfile(Long userId);
-    UserDto updateUserProfile(Long userId, UpdateUserDto updateUserDto);
+    UserDto updateUserProfile(UpdateUserDto updateUserDto);
     Page<UserDto> searchUsers(String query, int page, int size);
 }
