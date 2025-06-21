@@ -1,14 +1,13 @@
 package com.vistagram.app.service;
 
 import com.vistagram.app.domain.UserDto;
-import com.vistagram.app.domain.UserUpdateDto;
+import com.vistagram.app.domain.UpdateUserDto;
 import com.vistagram.app.exception.BadRequestException;
 import com.vistagram.app.exception.ResourceNotFoundException;
 import com.vistagram.app.mapper.UserMapper;
 import com.vistagram.app.repository.UserRepository;
 import com.vistagram.app.repository.entity.User;
 import com.vistagram.app.service.Impl.UserServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -64,7 +63,7 @@ class UserServiceTest {
         existingUser.setId(1L);
         existingUser.setUsername("oldname");
 
-        UserUpdateDto updateDto = new UserUpdateDto();
+        UpdateUserDto updateDto = new UpdateUserDto();
         updateDto.setUsername("newname");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
@@ -85,7 +84,7 @@ class UserServiceTest {
         existingUser.setId(1L);
         existingUser.setUsername("oldname");
 
-        UserUpdateDto updateDto = new UserUpdateDto();
+        UpdateUserDto updateDto = new UpdateUserDto();
         updateDto.setUsername("takenname");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));

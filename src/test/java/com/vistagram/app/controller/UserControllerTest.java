@@ -2,7 +2,7 @@ package com.vistagram.app.controller;
 
 import com.vistagram.app.api.shell.UserController;
 import com.vistagram.app.domain.UserDto;
-import com.vistagram.app.domain.UserUpdateDto;
+import com.vistagram.app.domain.UpdateUserDto;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.data.domain.Page;
@@ -43,7 +43,7 @@ class UserControllerTest extends ControllerTestBase {
 
     @Test
     void updateUserProfile_ShouldReturnUpdatedUser() throws Exception {
-        UserUpdateDto updateDto = new UserUpdateDto();
+        UpdateUserDto updateDto = new UpdateUserDto();
         updateDto.setUsername("newusername");
 
         UserDto userDto = UserDto.builder()
@@ -51,7 +51,7 @@ class UserControllerTest extends ControllerTestBase {
                 .username("newusername")
                 .build();
 
-        given(userService.updateUserProfile(eq(1L), any(UserUpdateDto.class)))
+        given(userService.updateUserProfile(eq(1L), any(UpdateUserDto.class)))
                 .willReturn(userDto);
 
         mockMvc.perform(put("/api/users/1")

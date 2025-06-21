@@ -1,7 +1,7 @@
 package com.vistagram.app.service.Impl;
 
 import com.vistagram.app.domain.UserDto;
-import com.vistagram.app.domain.UserUpdateDto;
+import com.vistagram.app.domain.UpdateUserDto;
 import com.vistagram.app.mapper.UserMapper;
 import com.vistagram.app.service.Interface.UserService;
 import com.vistagram.app.repository.UserRepository;
@@ -30,16 +30,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUserProfile(Long userId, UserUpdateDto userUpdateDto) {
+    public UserDto updateUserProfile(Long userId, UpdateUserDto updateUserDto) {
         User user = userRepository.findById(userId)
                     .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        if (userUpdateDto.getUsername() != null &&
-                    !userUpdateDto.getUsername().equals(user.getUsername())) {
-            if (userRepository.existsByUsername(userUpdateDto.getUsername())) {
+        if (updateUserDto.getUsername() != null &&
+                    !updateUserDto.getUsername().equals(user.getUsername())) {
+            if (userRepository.existsByUsername(updateUserDto.getUsername())) {
                     throw new BadRequestException("Username is already taken");
             }
-                user.setUsername(userUpdateDto.getUsername());
+                user.setUsername(updateUserDto.getUsername());
         }
             // Add other fields to update as needed
         User updatedUser = userRepository.save(user);

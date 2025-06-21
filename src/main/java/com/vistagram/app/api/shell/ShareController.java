@@ -1,5 +1,6 @@
 package com.vistagram.app.api.shell;
 
+import com.vistagram.app.api.response.PostDetailResponse;
 import com.vistagram.app.domain.PostDto;
 import com.vistagram.app.service.Interface.ShareService;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +31,13 @@ public class ShareController {
         return ResponseEntity.ok(shareLink);
     }
     @GetMapping(SHARED_BY_USER)
-    public ResponseEntity<Page<PostDto>> getUserSharedPosts(
+    public ResponseEntity<Page<PostDetailResponse>> getUserSharedPosts(
             @PathVariable Long userId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
         Page<PostDto> sharedPosts = shareService.getUserSharedPosts(userId, page, size);
-        return ResponseEntity.ok(sharedPosts);
+        Page<PostDetailResponse> userSharedPosts = sharedPosts.map(PostDetailResponse::fromPostDto);
+        return ResponseEntity.ok(userSharedPosts);
     }
 }

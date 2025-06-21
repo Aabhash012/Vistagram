@@ -1,5 +1,6 @@
 package com.vistagram.app.api.shell;
 
+import com.vistagram.app.api.response.PostDetailResponse;
 import com.vistagram.app.domain.PostDto;
 import com.vistagram.app.service.Interface.LikeService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class LikeController {
             @PathVariable Long postId,
             @RequestParam("userId") Long userId) {
 
-        likeService.likePost(postId, userId);
+        likeService.unLikePost(postId, userId);
         return ResponseEntity.ok().build();
     }
     @GetMapping(POST_STATUS)
@@ -50,12 +51,13 @@ public class LikeController {
     }
 
     @GetMapping(LIKED_BY_USER)
-    public ResponseEntity<Page<PostDto>> getUserLikedPosts(
+    public ResponseEntity<Page<PostDetailResponse>> getUserLikedPosts(
             @PathVariable Long userId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
         Page<PostDto> likedPosts = likeService.getUserLikedPosts(userId, page, size);
-        return ResponseEntity.ok(likedPosts);
+        Page<PostDetailResponse> postDetailWithLikeInfo = likedPosts.map(PostDetailResponse::fromPostDto);
+        return ResponseEntity.ok(postDetailWithLikeInfo);
     }
 }

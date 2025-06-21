@@ -53,7 +53,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public void unlikePost(Long postId, Long userId) {
+    public void unLikePost(Long postId, Long userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
 

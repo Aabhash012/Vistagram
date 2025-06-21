@@ -1,5 +1,6 @@
 package com.vistagram.app.api.shell;
 
+import com.vistagram.app.api.response.PostDetailResponse;
 import com.vistagram.app.domain.PostDto;
 import com.vistagram.app.service.Interface.PostService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping(CREATE_POST)
-    public ResponseEntity<PostDto> createPost(
+    public ResponseEntity<PostDetailResponse> createPost(
             @RequestParam("image") MultipartFile image,
             @RequestParam("caption") String caption,
             @RequestParam(value = "poiName", required = false) String poiName,
@@ -38,41 +39,46 @@ public class PostController {
             @RequestParam("userId") Long userId) {
 
         PostDto postDto = postService.createPost(image, caption, poiName, poiLocation, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(postDto);
+        PostDetailResponse createPostResponse = PostDetailResponse.fromPostDto(postDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createPostResponse);
     }
 
     @GetMapping(GET_TIMELINE)
-    public ResponseEntity<Page<PostDto>> getTimeline(
+    public ResponseEntity<Page<PostDetailResponse>> getTimeline(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam("currentUserId") Long currentUserId) {
 
         Page<PostDto> posts = postService.getTimeline(page, size, currentUserId);
-        return ResponseEntity.ok(posts);
+        Page<PostDetailResponse> getTimelineResponse = posts.map(PostDetailResponse::fromPostDto);
+        return ResponseEntity.ok(getTimelineResponse);
     }
     @GetMapping(GET_POST_BY_ID)
-    public ResponseEntity<PostDto> getPost(@PathVariable Long postId) {
+    public ResponseEntity<PostDetailResponse> getPost(@PathVariable Long postId) {
         PostDto postDto = postService.getPostById(postId);
-        return ResponseEntity.ok(postDto);
+        PostDetailResponse getPostById = PostDetailResponse.fromPostDto(postDto);
+        return ResponseEntity.ok(getPostById);
     }
     @GetMapping(GET_POST_BY_USER_ID)
-    public ResponseEntity<Page<PostDto>> getUserPosts(
+    public ResponseEntity<Page<PostDetailResponse>> getUserPosts(
             @PathVariable Long userId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
         Page<PostDto> posts = postService.getUserPosts(userId, page, size);
-        return ResponseEntity.ok(posts);
+        Page<PostDetailResponse> getUserPosts = posts.map(PostDetailResponse::fromPostDto);
+        return ResponseEntity.ok(getUserPosts);
     }
 
     @GetMapping(SEARCH_POST)
-    public ResponseEntity<Page<PostDto>> searchPosts(
+    public ResponseEntity<Page<PostDetailResponse>> searchPosts(
             @RequestParam("query") String query,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
         Page<PostDto> results = postService.searchPosts(query, page, size);
-        return ResponseEntity.ok(results);
+        Page<PostDetailResponse> searchPostResponse = results.map(PostDetailResponse::fromPostDto);
+        return ResponseEntity.ok(searchPostResponse);
     }
 
     @DeleteMapping(DELETE_POST)

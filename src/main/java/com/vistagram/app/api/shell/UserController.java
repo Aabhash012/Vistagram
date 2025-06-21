@@ -1,7 +1,9 @@
 package com.vistagram.app.api.shell;
 
+import com.vistagram.app.api.request.UpdateUserRequest;
+import com.vistagram.app.api.response.UserDetailResponse;
+import com.vistagram.app.domain.UpdateUserDto;
 import com.vistagram.app.domain.UserDto;
-import com.vistagram.app.domain.UserUpdateDto;
 import com.vistagram.app.service.Interface.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,27 +29,31 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping(GET_USER_PROFILE)
-    public ResponseEntity<UserDto> getUserProfile(@PathVariable Long userId) {
+    public ResponseEntity<UserDetailResponse> getUserProfile(@PathVariable Long userId) {
         UserDto userDto = userService.getUserProfile(userId);
-        return ResponseEntity.ok(userDto);
+        UserDetailResponse userDetailResponse = UserDetailResponse.fromUserDto(userDto);
+        return ResponseEntity.ok(userDetailResponse);
     }
 
     @PutMapping(UPDATE_USER_PROFILE)
-    public ResponseEntity<UserDto> updateUserProfile(
+    public ResponseEntity<UserDetailResponse> updateUserProfile(
             @PathVariable Long userId,
-            @Valid @RequestBody UserUpdateDto userUpdateDto) {
+            @Valid @RequestBody UpdateUserRequest updateUserRequest) {
 
-        UserDto updatedUser = userService.updateUserProfile(userId, userUpdateDto);
-        return ResponseEntity.ok(updatedUser);
+        UpdateUserDto updateUserDto = UpdateUserRequest.toDto(updateUserRequest);
+        UserDto updatedUserDetails = userService.updateUserProfile(userId, updateUserDto);
+        UserDetailResponse updatedUserDetailResponse = UserDetailResponse.fromUserDto(updatedUserDetails);
+        return ResponseEntity.ok(updatedUserDetailResponse);
     }
 
     @GetMapping(SEARCH_USER)
-    public ResponseEntity<Page<UserDto>> searchUsers(
+    public ResponseEntity<Page<UserDetailResponse>> searchUsers(
             @RequestParam("query") String query,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
         Page<UserDto> results = userService.searchUsers(query, page, size);
-        return ResponseEntity.ok(results);
+        Page<UserDetailResponse> searchUserResponse = results.map(UserDetailResponse::fromUserDto);
+        return ResponseEntity.ok(searchUserResponse);
     }
 }
