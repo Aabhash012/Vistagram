@@ -42,7 +42,7 @@ class LikeServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
         when(likeRepository.findByUserAndPost(any(), any())).thenReturn(Optional.of(like));
 
-        likeService.unlikePost(1L, 1L);
+        likeService.unLikePost(1L, 1L);
         verify(likeRepository).delete(like);
     }
 }

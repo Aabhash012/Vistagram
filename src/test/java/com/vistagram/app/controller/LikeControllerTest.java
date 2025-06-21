@@ -37,7 +37,7 @@ class LikeControllerTest extends ControllerTestBase {
                         .param("userId", "1"))
                 .andExpect(status().isNoContent());
 
-        verify(likeService).unlikePost(1L, 1L);
+        verify(likeService).unLikePost(1L, 1L);
     }
 
     @Test
