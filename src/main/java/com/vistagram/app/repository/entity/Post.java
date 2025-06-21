@@ -47,11 +47,11 @@ public class Post {
 
     @Builder.Default
     @Column(nullable = false)
-    private int likeCount = 0;
+    private long likeCount = 0;
 
     @Builder.Default
     @Column(nullable = false)
-    private int shareCount = 0;
+    private long shareCount = 0;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -63,9 +63,11 @@ public class Post {
 
     // Convenience methods
     public void addLike(Like like) {
-        likes.add(like);
-        like.setPost(this);
-        likeCount++;
+        if(like!=null) {
+            likes.add(like);
+            like.setPost(this);
+            likeCount++;
+        }
     }
 
     public void removeLike(Like like) {
@@ -76,8 +78,10 @@ public class Post {
     }
 
     public void addShare(Share share) {
-        shares.add(share);
-        share.setPost(this);
-        shareCount++;
+        if (share != null) {
+            shares.add(share);
+            share.setPost(this);
+            shareCount++;
+        }
     }
 }

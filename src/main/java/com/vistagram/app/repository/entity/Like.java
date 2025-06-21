@@ -39,5 +39,5 @@ public class Like {
     private Post post;
 
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private LocalDateTime likedAt;
 }

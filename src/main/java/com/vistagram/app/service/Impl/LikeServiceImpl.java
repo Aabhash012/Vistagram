@@ -11,13 +11,9 @@ import com.vistagram.app.service.Interface.LikeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -68,13 +64,8 @@ public class LikeServiceImpl implements LikeService {
 
         User user = baseService.getUserOrThrow(userId);
         Pageable pageable = PageRequest.of(page, size);
-        Page<Long> postIds = likeRepository.findLikedPostIdsByUserId(userId, pageable);
-        List<Post> posts = postRepository.findAllById(postIds.getContent());
-        posts.sort(Comparator.comparing(Post::getCreatedAt).reversed());
-        List<PostDto> postDtos = posts.stream()
-                .map(post -> postMapper.mapToDto(post, userId))
-                .collect(Collectors.toList());
-        return new PageImpl<>(postDtos, pageable, postIds.getTotalElements());
+        Page<Post> likedPosts = postRepository.findLikedPostsByUserId(userId, pageable);
+        return likedPosts.map(post -> postMapper.mapToDto(post, userId));
     }
 
     private Like buildLike(User user) {

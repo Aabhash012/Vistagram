@@ -21,11 +21,9 @@ public class UserDetailResponse {
     public static UserDetailResponse fromUserDto(UserDto userDto){
         return UserDetailResponse.builder()
                 .id(userDto.getId())
-                .userName(userDto.getUsername())
+                .userName(userDto.getUserName())
                 .createdAt(userDto.getCreatedAt())
                 .postCount(userDto.getPostCount())
-                .followerCount(userDto.getFollowerCount())
-                .followingCount((userDto.getFollowingCount()))
                 .build();
     }
 }

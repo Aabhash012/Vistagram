@@ -15,9 +15,7 @@ import java.time.LocalDateTime;
 public class UserDto {
 
     private Long id;
-    private String username;
+    private String userName;
     private LocalDateTime createdAt;
     private int postCount;
-    private int followerCount;
-    private int followingCount;
 }

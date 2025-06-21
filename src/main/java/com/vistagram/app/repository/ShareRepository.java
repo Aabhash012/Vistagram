@@ -2,15 +2,28 @@ package com.vistagram.app.repository;
 
 import com.vistagram.app.repository.entity.Post;
 import com.vistagram.app.repository.entity.Share;
+import com.vistagram.app.repository.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface ShareRepository extends JpaRepository<Share, Long> {
 
-    Long countByPost(Post post);
-    @Query("SELECT s.post.id FROM Share s WHERE s.user.id = :userId")
-    Page<Long> findSharedPostIdsByUserId(@Param("userId") Long userId, Pageable pageable);
+    //Long countByPost(Post post);
+//    @Query("SELECT s.post.id FROM Share s WHERE s.user.id = :userId")
+//    Page<Long> findSharedPostIdsByUserId(@Param("userId") Long userId, Pageable pageable);
+    Optional<Share> findByUserAndPost(User user, Post post);
+
+    @Query("""
+    SELECT s.post FROM Share s
+    WHERE s.user.id = :userId
+    ORDER BY s.post.createdAt DESC
+""")
+    Page<Post> findSharedPostsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+
 }

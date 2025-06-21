@@ -10,11 +10,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserMapper {
 
-    private final ModelMapper modelMapper;
     public UserDto mapToDto(User user) {
-        return modelMapper.map(user, UserDto.class);
-    }
-    public User mapToEntity(UserDto userDto) {
-        return modelMapper.map(userDto, User.class);
+        return UserDto.builder()
+                .id(user.getId())
+                .userName(user.getUsername())
+                .createdAt(user.getCreatedAt())
+                .postCount(user.getPostCount())
+            .build();
+
     }
 }

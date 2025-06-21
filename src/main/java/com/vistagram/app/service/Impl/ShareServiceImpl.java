@@ -11,13 +11,12 @@ import com.vistagram.app.repository.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import static com.vistagram.app.utils.Constants.IMG_URL;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -33,10 +32,18 @@ public class ShareServiceImpl implements ShareService {
 
         Post post = baseService.getPostOrThrow(postId);
         User user = baseService.getUserOrThrow(userId);
-        Share share = buildShare(user,post);
-        post.addShare(share);
-        shareRepository.save(share);
-        postRepository.save(post);
+        Optional<Share> alreadyShared = shareRepository.findByUserAndPost(user, post);
+        if(alreadyShared.isPresent()){
+            Share existingShare = alreadyShared.get();
+            existingShare.incrementShareCount(); // Custom method in Share entity
+            shareRepository.save(existingShare);
+        }
+        else{
+            Share share = buildShare(user, post);
+            post.addShare(share);
+            //shareRepository.save(share); can be removed as this is also done by next line as we use cascade in entity
+            postRepository.save(post);
+        }
         return generateShareLink(postId);
     }
 
@@ -45,13 +52,8 @@ public class ShareServiceImpl implements ShareService {
 
         User user = baseService.getUserOrThrow(userId);
         Pageable pageable = PageRequest.of(page, size);
-        Page<Long> postIds = shareRepository.findSharedPostIdsByUserId(userId, pageable);
-        List<Post> posts = postRepository.findAllById(postIds.getContent());
-        posts.sort(Comparator.comparing(Post::getCreatedAt).reversed());
-        List<PostDto> postDtos = posts.stream()
-                .map(post -> postMapper.mapToDto(post, userId))
-                .collect(Collectors.toList());
-        return new PageImpl<>(postDtos, pageable, postIds.getTotalElements());
+        Page<Post> sharedPosts = shareRepository.findSharedPostsByUserId(userId, pageable);
+        return sharedPosts.map(post -> postMapper.mapToDto(post, userId));
     }
     private Share buildShare(User user, Post post) {
         return Share.builder()
@@ -60,6 +62,6 @@ public class ShareServiceImpl implements ShareService {
                 .build();
     }
     private String generateShareLink(Long postId) {
-        return "https://vistagram.app/posts/" + postId;
+        return IMG_URL + postId;
     }
 }

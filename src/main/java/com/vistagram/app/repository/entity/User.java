@@ -1,14 +1,7 @@
 package com.vistagram.app.repository.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Table;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -36,12 +29,25 @@ public class User {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private int postCount = 0;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Post> posts = new ArrayList<>();
 
     public void addPost(Post post) {
-        posts.add(post);
-        post.setUser(this);
+        if (post != null) {
+            posts.add(post);
+            post.setUser(this);
+            postCount++; // keep the count in sync
+        }
+    }
+    public void removePost(Post post) {
+        if (posts.remove(post)) {
+            post.setUser(null);
+            postCount = Math.max(0, postCount - 1);
+        }
     }
 }

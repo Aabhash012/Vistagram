@@ -15,6 +15,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "shares")
@@ -36,6 +37,12 @@ public class Share {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @Column(nullable = false)
+    private int shareCount = 1;
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public void incrementShareCount() {
+        this.shareCount++;
+    }
 }

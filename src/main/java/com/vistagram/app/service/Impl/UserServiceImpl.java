@@ -46,8 +46,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserDto> searchUsers(String query, int page, int size) {
 
+        String sanitizedQuery = sanitizeQuery(query);
+        if (sanitizedQuery.isEmpty()) {
+            return Page.empty(PageRequest.of(page, size));
+        }
         Pageable pageable = PageRequest.of(page, size);
-        return userRepository.searchByUsername(query, pageable)
+        return userRepository.searchByUsername(sanitizedQuery, pageable)
                 .map(userMapper::mapToDto);
     }
     private boolean applyUserUpdates(User user, UpdateUserDto dto) {
@@ -66,5 +70,8 @@ public class UserServiceImpl implements UserService {
         if (updateUserDto == null) {
             throw new BadRequestException("Update user request cannot be null.");
         }
+    }
+    private String sanitizeQuery(String query){
+        return query == null ? "" : query.trim().toLowerCase();
     }
 }

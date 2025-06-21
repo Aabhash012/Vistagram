@@ -21,7 +21,7 @@ public class PostDto {
     private String poiName;
     private String poiLocation;
     private LocalDateTime createdAt;
-    private int likeCount;
-    private int shareCount;
+    private long likeCount;
+    private long shareCount;
     private boolean likedByCurrentUser;
 }

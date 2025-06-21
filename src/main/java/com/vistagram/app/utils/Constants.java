@@ -2,6 +2,7 @@ package com.vistagram.app.utils;
 
 public class Constants {
 
+    public static final String IMG_URL = "https://vistagram.app/posts/";
     public static class ApiRoutes {
 
             public static final String API_SHELL = "/api/v1";
