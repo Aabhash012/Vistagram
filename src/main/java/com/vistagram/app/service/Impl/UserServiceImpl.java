@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.vistagram.app.exception.ResourceNotFoundException;
 import com.vistagram.app.exception.BadRequestException;
 
 @Service
@@ -22,26 +21,25 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final BaseService baseService;
+
     @Override
     public UserDto getUserProfile(Long userId) {
-        User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        User user = baseService.getUserOrThrow(userId);
         return userMapper.mapToDto(user);
     }
 
     @Override
     public UserDto updateUserProfile(Long userId, UpdateUserDto updateUserDto) {
-        User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        if (updateUserDto.getUsername() != null &&
-                    !updateUserDto.getUsername().equals(user.getUsername())) {
-            if (userRepository.existsByUsername(updateUserDto.getUsername())) {
-                    throw new BadRequestException("Username is already taken");
-            }
-                user.setUsername(updateUserDto.getUsername());
+        if (updateUserDto == null) {
+            throw new BadRequestException("Update data cannot be null");
         }
-            // Add other fields to update as needed
+        User user = baseService.getUserOrThrow(userId);
+        boolean updated = applyUserUpdates(user, updateUserDto);
+        if (!updated) {
+            return userMapper.mapToDto(user); // No changes, return as-is
+        }
         User updatedUser = userRepository.save(user);
         return userMapper.mapToDto(updatedUser);
     }
@@ -51,5 +49,17 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.searchByUsername(query, pageable)
                 .map(userMapper::mapToDto);
+    }
+    private boolean applyUserUpdates(User user, UpdateUserDto dto) {
+
+        boolean updated = false;
+        if (dto.getUsername() != null && !dto.getUsername().equals(user.getUsername())) {
+            if (userRepository.existsByUsername(dto.getUsername())) {
+                throw new BadRequestException("Username is already taken");
+            }
+            user.setUsername(dto.getUsername());
+            updated = true;
+        }
+        return updated;
     }
 }

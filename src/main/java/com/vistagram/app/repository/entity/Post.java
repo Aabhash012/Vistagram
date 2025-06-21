@@ -1,16 +1,8 @@
 package com.vistagram.app.repository.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Table;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-import jakarta.persistence.Id;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import lombok.Getter;
@@ -44,6 +36,14 @@ public class Post {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private int likeCount = 0;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private int shareCount = 0;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Like> likes = new ArrayList<>();
@@ -56,15 +56,19 @@ public class Post {
     public void addLike(Like like) {
         likes.add(like);
         like.setPost(this);
+        likeCount++;
     }
 
     public void removeLike(Like like) {
-        likes.remove(like);
-        like.setPost(null);
+        if (likes.remove(like)) {
+            like.setPost(null);
+            likeCount = Math.max(0, likeCount - 1);
+        }
     }
 
     public void addShare(Share share) {
         shares.add(share);
         share.setPost(this);
+        shareCount++;
     }
 }

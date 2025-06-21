@@ -12,7 +12,6 @@ import com.vistagram.app.repository.entity.User;
 import com.vistagram.app.service.Interface.LikeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import com.vistagram.app.exception.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,51 +29,46 @@ public class LikeServiceImpl implements LikeService {
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final BaseService baseService;
     private final PostMapper postMapper;
 
     @Override
     public void likePost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        if (!likeRepository.isAlreadyLiked(userId, postId)) {
+            Post post = baseService.getPostOrThrow(postId);
+            User user = baseService.getUserOrThrow(userId);
 
-        if (likeRepository.existsByUserAndPost(user, post)) {
-            throw new BadRequestException("You have already liked this post");
+            Like like = Like.builder()
+                    .user(user)
+                    .build();
+
+            post.addLike(like);
+            likeRepository.save(like);
+            postRepository.save(post);
         }
-
-        Like like = Like.builder()
-                .user(user)
-                .post(post)
-                .build();
-
-        likeRepository.save(like);
     }
 
     @Override
     public void unLikePost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        if (likeRepository.isAlreadyLiked(userId, postId)) {
+            Post post = baseService.getPostOrThrow(postId);
+            User user = baseService.getUserOrThrow(userId);
+            Like like = baseService.getLikeOrThrow(user, post);
 
-        Like like = likeRepository.findByUserAndPost(user, post)
-                .orElseThrow(() -> new ResourceNotFoundException("Like", "user and post", userId + " " + postId));
-
-        likeRepository.delete(like);
+            post.removeLike(like);
+            likeRepository.delete(like);
+            postRepository.save(post);
+        }
     }
 
     @Override
     public boolean isPostLikedByUser(Long postId, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
+        Post post = baseService.getPostOrThrow(postId);
+        User user = baseService.getUserOrThrow(userId);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-
-        return likeRepository.existsByUserAndPost(user, post);
+        return likeRepository.isAlreadyLiked(user.getId(), post.getId());
     }
 
     @Override

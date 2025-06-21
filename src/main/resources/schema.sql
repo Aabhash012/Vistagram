@@ -11,7 +11,9 @@ CREATE TABLE posts (
     caption TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     poi_name VARCHAR(100),
-    poi_location VARCHAR(100)
+    poi_location VARCHAR(100),
+    like_count INTEGER DEFAULT 0,
+    share_count INTEGER DEFAULT 0
 );
 
 CREATE TABLE likes (

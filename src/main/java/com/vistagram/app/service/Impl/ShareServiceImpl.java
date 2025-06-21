@@ -27,33 +27,26 @@ public class ShareServiceImpl implements ShareService {
 
     private final ShareRepository shareRepository;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final BaseService baseService;
     private final PostMapper postMapper;
 
     @Override
     public String sharePost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
+        Post post = baseService.getPostOrThrow(postId);
+        User user = baseService.getUserOrThrow(userId);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-
-        Share share = Share.builder()
-                .user(user)
-                .post(post)
-                .build();
-
+        Share share = buildShare(user,post);
         shareRepository.save(share);
-
+        post.setShareCount(post.getShareCount() + 1);
+        postRepository.save(post);
         // Generate a shareable link
         return "https://vistagram.app/posts/" + postId;
     }
 
     @Override
     public Page<PostDto> getUserSharedPosts(Long userId, int page, int size) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
+        User user = baseService.getUserOrThrow(userId);
         Pageable pageable = PageRequest.of(page, size);
         Page<Long> postIds = shareRepository.findSharedPostIdsByUserId(userId, pageable);
 
@@ -64,5 +57,11 @@ public class ShareServiceImpl implements ShareService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(postDtos, pageable, postIds.getTotalElements());
+    }
+    private Share buildShare(User user, Post post) {
+        return Share.builder()
+                .user(user)
+                .post(post)
+                .build();
     }
 }
