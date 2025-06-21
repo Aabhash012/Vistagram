@@ -15,7 +15,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "shares")
 @Getter

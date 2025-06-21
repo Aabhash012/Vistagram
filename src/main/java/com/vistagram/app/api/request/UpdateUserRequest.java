@@ -2,7 +2,11 @@ package com.vistagram.app.api.request;
 
 import com.vistagram.app.domain.UpdateUserDto;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+
 
 @Getter
 @NoArgsConstructor
