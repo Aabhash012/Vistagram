@@ -27,9 +27,4 @@ public class BaseService {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
     }
-    protected Like getLikeOrThrow(User user, Post post) {
-        return likeRepository.findByUserAndPost(user, post)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Like", "user and post", user.getId() + " " + post.getId()));
-    }
 }

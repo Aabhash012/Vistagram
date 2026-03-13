@@ -1,87 +1,51 @@
 package com.vistagram.app.repository.entity;
 
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Column;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import java.util.List;
 
 @Entity
-@Table(name = "posts")
+@Table(
+        name = "posts",
+        indexes = {
+                @Index(name = "idx_post_user", columnList = "user_id"),
+                @Index(name = "idx_post_created", columnList = "createdAt")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Post {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(nullable = false)
     private String imageUrl;
+
     private String caption;
     private String poiName;
     private String poiLocation;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Builder.Default
     @Column(nullable = false)
     private long likeCount = 0;
 
-    @Builder.Default
     @Column(nullable = false)
     private long shareCount = 0;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Like> likes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Share> shares = new ArrayList<>();
-
-    // Convenience methods
-    public void addLike(Like like) {
-        if(like!=null) {
-            likes.add(like);
-            like.setPost(this);
-            likeCount++;
-        }
-    }
-
-    public void removeLike(Like like) {
-        if (likes.remove(like)) {
-            like.setPost(null);
-            likeCount = Math.max(0, likeCount - 1);
-        }
-    }
-
-    public void addShare(Share share) {
-        if (share != null) {
-            shares.add(share);
-            share.setPost(this);
-            shareCount++;
-        }
-    }
 }

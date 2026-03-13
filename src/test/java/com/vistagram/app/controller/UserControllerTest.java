@@ -30,7 +30,7 @@ class UserControllerTest extends ControllerTestBase {
     void getUserProfile_ShouldReturnUser() throws Exception {
         UserDto userDto = UserDto.builder()
                 .id(1L)
-                .username("testuser")
+                .userName("testuser")
                 .build();
 
         given(userService.getUserProfile(1L)).willReturn(userDto);
@@ -48,7 +48,7 @@ class UserControllerTest extends ControllerTestBase {
 
         UserDto userDto = UserDto.builder()
                 .id(1L)
-                .username("newusername")
+                .userName("newusername")
                 .build();
 
         given(userService.updateUserProfile(any(UpdateUserDto.class)))
@@ -65,7 +65,7 @@ class UserControllerTest extends ControllerTestBase {
     void searchUsers_ShouldReturnMatchingUsers() throws Exception {
         UserDto userDto = UserDto.builder()
                 .id(1L)
-                .username("testuser")
+                .userName("testuser")
                 .build();
 
         Page<UserDto> page = new PageImpl<>(List.of(userDto));

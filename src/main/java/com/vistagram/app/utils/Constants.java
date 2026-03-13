@@ -33,5 +33,9 @@ public class Constants {
             public static final String SHARE_POST = "/{postId}";
             public static final String SHARED_BY_USER = "/user/{userId}";
         }
+
+        public static class Comment {
+            public static final String COMMENT_SHELL = API_SHELL + "/comment";
+        }
     }
 }

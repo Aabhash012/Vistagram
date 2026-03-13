@@ -10,13 +10,15 @@ import com.vistagram.app.repository.entity.User;
 import com.vistagram.app.service.Interface.LikeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class LikeServiceImpl implements LikeService {
 
@@ -26,46 +28,44 @@ public class LikeServiceImpl implements LikeService {
     private final PostMapper postMapper;
 
     @Override
+    @Transactional
     public void likePost(Long postId, Long userId) {
 
-        if (!likeRepository.existsByUserIdAndPostId(userId, postId)) {
-            Post post = baseService.getPostOrThrow(postId);
-            User user = baseService.getUserOrThrow(userId);
-            Like like = buildLike(user);
-            post.addLike(like);
+        Like like = Like.builder()
+                .post(Post.builder().id(postId).build())
+                .user(User.builder().id(userId).build())
+                .build();
+
+        try {
             likeRepository.save(like);
-            postRepository.save(post);
+            postRepository.incrementLikeCount(postId);
+        } catch (DataIntegrityViolationException ignored) {
+            // already liked
         }
     }
 
     @Override
+    @Transactional
     public void unLikePost(Long postId, Long userId) {
 
         if (likeRepository.existsByUserIdAndPostId(userId, postId)) {
-            Post post = baseService.getPostOrThrow(postId);
-            User user = baseService.getUserOrThrow(userId);
-            Like like = baseService.getLikeOrThrow(user, post);
-            post.removeLike(like);
-            likeRepository.delete(like);
-            postRepository.save(post);
+            likeRepository.deleteByUserIdAndPostId(userId, postId);
+            postRepository.decrementLikeCount(postId);
         }
     }
 
     @Override
     public boolean isPostLikedByUser(Long postId, Long userId) {
-
-        Post post = baseService.getPostOrThrow(postId);
-        User user = baseService.getUserOrThrow(userId);
-        return likeRepository.existsByUserIdAndPostId(user.getId(), post.getId());
+        return likeRepository.existsByUserIdAndPostId(userId, postId);
     }
 
     @Override
     public Page<PostDto> getUserLikedPosts(Long userId, int page, int size) {
 
-        User user = baseService.getUserOrThrow(userId);
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> likedPosts = postRepository.findLikedPostsByUserId(userId, pageable);
-        return likedPosts.map(post -> postMapper.mapToDto(post, userId));
+        Set<Long> likedPostIds = likeRepository.findPostIdsLikedByUser(userId);
+        return likedPosts.map(post -> postMapper.mapToDto(post, likedPostIds));
     }
 
     private Like buildLike(User user) {

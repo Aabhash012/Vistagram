@@ -1,16 +1,20 @@
 package com.vistagram.app.repository;
 
 import com.vistagram.app.repository.entity.Like;
-import com.vistagram.app.repository.entity.Post;
-import com.vistagram.app.repository.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import java.util.Set;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
 
-    Optional<Like> findByUserAndPost(User user, Post post);
+    boolean existsByUserIdAndPostId(Long userId, Long postId);
+    void deleteByUserIdAndPostId(Long userId, Long postId);
 
-    Boolean existsByUserIdAndPostId(Long userId, Long postId);
-    //Long countByPost(Post post);
+    @Query("""
+    SELECT l.post.id
+    FROM Like l
+    WHERE l.user.id = :userId
+""")
+    Set<Long> findPostIdsLikedByUser(@Param("userId") Long userId);
 }

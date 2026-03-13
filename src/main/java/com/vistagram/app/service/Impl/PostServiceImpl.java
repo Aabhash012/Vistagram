@@ -2,7 +2,9 @@ package com.vistagram.app.service.Impl;
 
 import com.vistagram.app.domain.PostDto;
 import com.vistagram.app.exception.BadRequestException;
+import com.vistagram.app.exception.NotFoundException;
 import com.vistagram.app.mapper.PostMapper;
+import com.vistagram.app.repository.LikeRepository;
 import com.vistagram.app.repository.PostRepository;
 import com.vistagram.app.repository.UserRepository;
 import com.vistagram.app.repository.entity.Post;
@@ -17,8 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.vistagram.app.exception.UnauthorizedException;
 
+import java.util.Collections;
+import java.util.Set;
+
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
@@ -27,63 +31,94 @@ public class PostServiceImpl implements PostService {
     private final FileStorageServiceImpl fileStorageService;
     private final BaseService baseService;
     private final PostMapper postMapper;
+    private final LikeRepository likeRepository;
 
     @Override
-    public PostDto createPost(MultipartFile image, String caption, String poiName, String poiLocation, Long userId) {
+    @Transactional
+    public PostDto createPost(MultipartFile image,
+                              String caption,
+                              String poiName,
+                              String poiLocation,
+                              Long userId) {
 
         validateImageFile(image);
-        User user = baseService.getUserOrThrow(userId);
-        String imageUrl = fileStorageService.storeFile(image);
-        Post post = buildPost(user, imageUrl, caption, poiName, poiLocation);
 
-        user.addPost(post);
-        userRepository.save(user);
-        //Post savedPost = postRepository.save(post); cascading does this
-        return postMapper.mapToDto(post, userId);
+        String imageUrl = fileStorageService.storeFile(image);
+
+        Post post = Post.builder()
+                .user(User.builder().id(userId).build())
+                .imageUrl(imageUrl)
+                .caption(caption)
+                .poiName(poiName)
+                .poiLocation(poiLocation)
+                .build();
+
+        Post savedPost = postRepository.save(post);
+
+        return postMapper.mapToDto(savedPost, Collections.emptySet());
     }
 
     @Override
     public Page<PostDto> getTimeline(int page, int size, Long currentUserId) {
 
         Pageable pageable = PageRequest.of(page, size);
+        Set<Long> likedPostIds = Collections.emptySet();
+
+        if (currentUserId != null) {
+            likedPostIds = likeRepository.findPostIdsLikedByUser(currentUserId);
+        }
+
+        Set<Long> finalLikedPostIds = likedPostIds;
+
         return postRepository.findAllByOrderByCreatedAtDesc(pageable)
-                .map(post -> postMapper.mapToDto(post, currentUserId));
+                .map(post -> postMapper.mapToDto(post, finalLikedPostIds));
     }
 
     @Override
     public PostDto getPostById(Long postId) {
 
-        Post post = baseService.getPostOrThrow(postId);
-        return postMapper.mapToDto(post, null);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("Post not found"));
+
+        return postMapper.mapToDto(post, Collections.emptySet());
     }
 
     @Override
     public Page<PostDto> getUserPosts(Long userId, int page, int size) {
 
-        User user = baseService.getUserOrThrow(userId);
         Pageable pageable = PageRequest.of(page, size);
-        return postRepository.findByUserOrderByCreatedAtDesc(user, pageable)
-                .map(post -> postMapper.mapToDto(post, userId));
+
+        Set<Long> likedPostIds = likeRepository.findPostIdsLikedByUser(userId);
+
+        return postRepository
+                .findByUserIdOrderByCreatedAtDesc(userId, pageable)
+                .map(post -> postMapper.mapToDto(post, likedPostIds));
     }
 
     @Override
     public Page<PostDto> searchPosts(String query, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return postRepository.searchPosts(query, pageable)
-                .map(post -> postMapper.mapToDto(post, null));
+
+        return postRepository
+                .searchPosts(query, pageable)
+                .map(post -> postMapper.mapToDto(post, Collections.emptySet()));
     }
 
     @Override
+    @Transactional
     public void deletePost(Long postId, Long userId) {
 
-        Post post = baseService.getPostOrThrow(postId);
-        validatePostOwnership(post, userId);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("Post not found"));
+
+        if (!post.getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("You are not authorized to delete this post");
+        }
+
         fileStorageService.deleteFile(post.getImageUrl());
-        User user = post.getUser();
-        user.removePost(post);
-        userRepository.save(user);
-        //postRepository.delete(post); // 🔁 Post is deleted automatically due to orphanRemoval = true
+
+        postRepository.delete(post);
     }
 
     private void validateImageFile(MultipartFile image) {

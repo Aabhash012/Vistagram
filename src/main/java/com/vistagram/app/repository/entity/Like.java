@@ -1,15 +1,8 @@
 package com.vistagram.app.repository.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-import jakarta.persistence.Id;
+
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,14 +11,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @Entity
-@Table(name = "likes",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"}))
+@Table(
+        name = "likes",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"}),
+        indexes = {
+                @Index(name = "idx_like_post", columnList = "post_id"),
+                @Index(name = "idx_like_user", columnList = "user_id")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Like {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

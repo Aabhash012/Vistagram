@@ -8,17 +8,21 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        indexes = {
+                @Index(name = "idx_user_username", columnList = "username")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,27 +31,9 @@ public class User {
     private String username;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Builder.Default
     @Column(nullable = false)
     private int postCount = 0;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Post> posts = new ArrayList<>();
-
-    public void addPost(Post post) {
-        if (post != null) {
-            posts.add(post);
-            post.setUser(this);
-            postCount++; // keep the count in sync
-        }
-    }
-    public void removePost(Post post) {
-        if (posts.remove(post)) {
-            post.setUser(null);
-            postCount = Math.max(0, postCount - 1);
-        }
-    }
 }
