@@ -1,9 +1,9 @@
 package com.vistagram.app.service.Interface;
 
 import com.vistagram.app.domain.CommentDto;
-import com.vistagram.app.domain.PostDto;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
 
 public interface CommentService {
     CommentDto addComment(CommentDto commentDto, Long userName);
+    Page<CommentDto> getComments(Long postId, int page, int size);
 }

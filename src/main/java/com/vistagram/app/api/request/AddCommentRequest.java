@@ -1,7 +1,6 @@
 package com.vistagram.app.api.request;
 
 import com.vistagram.app.domain.CommentDto;
-import com.vistagram.app.domain.UpdateUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

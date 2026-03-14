@@ -13,15 +13,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import static com.vistagram.app.utils.Constants.ApiRoutes.Like.LIKED_BY_USER;
-import static com.vistagram.app.utils.Constants.ApiRoutes.Like.LIKE_SHELL;
-import static com.vistagram.app.utils.Constants.ApiRoutes.Like.LIKE_POST;
-import static com.vistagram.app.utils.Constants.ApiRoutes.Like.POST_STATUS;
-import static com.vistagram.app.utils.Constants.ApiRoutes.Like.UNLIKE_POST;
+
+import static com.vistagram.app.utils.Constants.ApiRoutes.Like.*;
+import static com.vistagram.app.utils.Constants.ApiRoutes.Post.POST_SHELL;
+import static com.vistagram.app.utils.Constants.ApiRoutes.User.USER_LIKED_POSTS;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(LIKE_SHELL)
+@RequestMapping(POST_SHELL)
 public class LikeController {
 
     private final LikeService likeService;
@@ -42,7 +41,7 @@ public class LikeController {
         likeService.unLikePost(postId, userId);
         return ResponseEntity.ok().build();
     }
-    @GetMapping(POST_STATUS)
+    @GetMapping(LIKE_STATUS)
     public ResponseEntity<Boolean> isPostLikedByUser(
             @PathVariable Long postId,
             @RequestParam("userId") Long userId) {
@@ -51,7 +50,7 @@ public class LikeController {
         return ResponseEntity.ok(isLiked);
     }
 
-    @GetMapping(LIKED_BY_USER)
+    @GetMapping(USER_LIKED_POSTS)
     public ResponseEntity<Page<PostDetailResponse>> getUserLikedPosts(
             @PathVariable Long userId,
             @RequestParam(value = "page", defaultValue = "0") int page,

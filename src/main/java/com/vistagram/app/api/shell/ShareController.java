@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import static com.vistagram.app.utils.Constants.ApiRoutes.Share.SHARED_BY_USER;
-import static com.vistagram.app.utils.Constants.ApiRoutes.Share.SHARE_SHELL;
+
+import static com.vistagram.app.utils.Constants.ApiRoutes.Post.POST_SHELL;
 import static com.vistagram.app.utils.Constants.ApiRoutes.Share.SHARE_POST;
+import static com.vistagram.app.utils.Constants.ApiRoutes.User.USER_SHARED_POSTS;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(SHARE_SHELL)
+@RequestMapping(POST_SHELL)
 public class ShareController {
 
     private final ShareService shareService;
@@ -30,7 +32,7 @@ public class ShareController {
         String shareLink = shareService.sharePost(postId, userId);
         return ResponseEntity.ok(shareLink);
     }
-    @GetMapping(SHARED_BY_USER)
+    @GetMapping(USER_SHARED_POSTS)
     public ResponseEntity<Page<PostDetailResponse>> getUserSharedPosts(
             @PathVariable Long userId,
             @RequestParam(value = "page", defaultValue = "0") int page,

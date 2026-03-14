@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,6 @@ public class LikeServiceImpl implements LikeService {
 
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
-    private final BaseService baseService;
     private final PostMapper postMapper;
 
     @Override
@@ -63,14 +63,15 @@ public class LikeServiceImpl implements LikeService {
     public Page<PostDto> getUserLikedPosts(Long userId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> likedPosts = postRepository.findLikedPostsByUserId(userId, pageable);
-        Set<Long> likedPostIds = likeRepository.findPostIdsLikedByUser(userId);
-        return likedPosts.map(post -> postMapper.mapToDto(post, likedPostIds));
-    }
 
-    private Like buildLike(User user) {
-        return Like.builder()
-                .user(user)
-                .build();
+        Page<Post> likedPosts =
+                postRepository.findLikedPostsByUserId(userId, pageable);
+
+        Set<Long> likedPostIds = likedPosts.stream()
+                .map(Post::getId)
+                .collect(Collectors.toSet());
+
+        return likedPosts.map(post ->
+                postMapper.mapToDto(post, likedPostIds));
     }
 }

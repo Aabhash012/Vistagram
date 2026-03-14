@@ -2,33 +2,57 @@ package com.vistagram.app.service.Impl;
 
 import com.vistagram.app.domain.CommentDto;
 import com.vistagram.app.repository.CommentRepository;
-import com.vistagram.app.repository.LikeRepository;
+import com.vistagram.app.repository.PostRepository;
 import com.vistagram.app.repository.entity.Comments;
 import com.vistagram.app.repository.entity.Post;
 import com.vistagram.app.repository.entity.User;
 import com.vistagram.app.service.Interface.CommentService;
-import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final BaseService baseService;
-    public CommentDto addComment(CommentDto commentDto, Long userId){
-        Post post = baseService.getPostOrThrow(commentDto.getPostId());
-        User user = baseService.getUserOrThrow(userId);
+    private final PostRepository postRepository;
 
-        Comments comment = new Comments();
-        comment.setComment(commentDto.getComment());
-        comment.setPost(post);
-        comment.setUser(user);
-        commentRepository.save(comment);
-        return commentDto;
+    @Override
+    @Transactional
+    public CommentDto addComment(CommentDto commentDto, Long userId) {
 
+        Comments comment = Comments.builder()
+                .comment(commentDto.getComment())
+                .post(Post.builder().id(commentDto.getPostId()).build())
+                .user(User.builder().id(userId).build())
+                .build();
+        Comments savedComment = commentRepository.save(comment);
+        postRepository.incrementCommentCount(commentDto.getPostId());
+        return CommentDto.builder()
+                .id(savedComment.getId())
+                .comment(savedComment.getComment())
+                .postId(commentDto.getPostId())
+                .userId(userId)
+                .createdAt(savedComment.getCreatedAt())
+                .build();
+    }
+    @Override
+    public Page<CommentDto> getComments(Long postId, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return commentRepository
+                .findByPostIdOrderByCreatedAtDesc(postId, pageable)
+                .map(comment -> CommentDto.builder()
+                        .id(comment.getId())
+                        .comment(comment.getComment())
+                        .postId(postId)
+                        .userId(comment.getUser().getId())
+                        .createdAt(comment.getCreatedAt())
+                        .build());
     }
 }

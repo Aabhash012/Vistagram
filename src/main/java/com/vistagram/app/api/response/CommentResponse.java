@@ -1,12 +1,6 @@
 package com.vistagram.app.api.response;
 
 import com.vistagram.app.domain.CommentDto;
-import com.vistagram.app.repository.entity.Post;
-import com.vistagram.app.repository.entity.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

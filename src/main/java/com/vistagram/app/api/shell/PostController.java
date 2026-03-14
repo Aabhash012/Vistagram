@@ -19,9 +19,9 @@ import static com.vistagram.app.utils.Constants.ApiRoutes.Post.CREATE_POST;
 import static com.vistagram.app.utils.Constants.ApiRoutes.Post.DELETE_POST;
 import static com.vistagram.app.utils.Constants.ApiRoutes.Post.GET_POST_BY_ID;
 import static com.vistagram.app.utils.Constants.ApiRoutes.Post.POST_SHELL;
-import static com.vistagram.app.utils.Constants.ApiRoutes.Post.GET_POST_BY_USER_ID;
 import static com.vistagram.app.utils.Constants.ApiRoutes.Post.GET_TIMELINE;
-import static com.vistagram.app.utils.Constants.ApiRoutes.Post.SEARCH_POST;
+import static com.vistagram.app.utils.Constants.ApiRoutes.Post.SEARCH_POSTS;
+import static com.vistagram.app.utils.Constants.ApiRoutes.User.USER_POSTS;
 
 @RestController
 @RequiredArgsConstructor
@@ -59,7 +59,7 @@ public class PostController {
         PostDetailResponse getPostById = PostDetailResponse.fromPostDto(postDto);
         return ResponseEntity.ok(getPostById);
     }
-    @GetMapping(GET_POST_BY_USER_ID)
+    @GetMapping(USER_POSTS)
     public ResponseEntity<Page<PostDetailResponse>> getUserPosts(
             @PathVariable Long userId,
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -70,7 +70,7 @@ public class PostController {
         return ResponseEntity.ok(getUserPosts);
     }
 
-    @GetMapping(SEARCH_POST)
+    @GetMapping(SEARCH_POSTS)
     public ResponseEntity<Page<PostDetailResponse>> searchPosts(
             @RequestParam("query") String query,
             @RequestParam(value = "page", defaultValue = "0") int page,

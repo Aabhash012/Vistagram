@@ -24,10 +24,10 @@ public class FileStorageServiceImpl implements FileStorageService {
     private final Path fileStorageLocation;
     @Autowired
     public FileStorageServiceImpl(FileStorageProperties fileStorageProperties) {
+
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
                 .toAbsolutePath()
                 .normalize();
-
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
@@ -39,7 +39,6 @@ public class FileStorageServiceImpl implements FileStorageService {
     public String storeFile(MultipartFile file) {
         // Normalize file name
         String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
-
         try {
             // Validate file name
             if (originalFileName.contains("..")) {

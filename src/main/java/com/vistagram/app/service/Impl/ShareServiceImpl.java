@@ -15,8 +15,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
+
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.vistagram.app.utils.Constants.IMG_URL;
 
@@ -26,7 +28,6 @@ public class ShareServiceImpl implements ShareService {
 
     private final ShareRepository shareRepository;
     private final PostRepository postRepository;
-    private final BaseService baseService;
     private final PostMapper postMapper;
     private final LikeRepository likeRepository;
 
@@ -51,16 +52,21 @@ public class ShareServiceImpl implements ShareService {
     public Page<PostDto> getUserSharedPosts(Long userId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> sharedPosts = shareRepository.findSharedPostsByUserId(userId, pageable);
-        Set<Long> likedPostIds = likeRepository.findPostIdsLikedByUser(userId);
-        return sharedPosts.map(post -> postMapper.mapToDto(post, likedPostIds));
+        Page<Post> sharedPosts =
+                shareRepository.findSharedPostsByUserId(userId, pageable);
+        Set<Long> postIds = sharedPosts.stream()
+                .map(Post::getId)
+                .collect(Collectors.toSet());
+        Set<Long> likedPostIds = Collections.emptySet();
+        if (!postIds.isEmpty()) {
+            likedPostIds =
+                    likeRepository.findLikedPostIdsInPosts(userId, postIds);
+        }
+        Set<Long> finalLikedPostIds = likedPostIds;
+        return sharedPosts.map(post ->
+                postMapper.mapToDto(post, finalLikedPostIds));
     }
-    private Share buildShare(User user, Post post) {
-        return Share.builder()
-                .user(user)
-                .post(post)
-                .build();
-    }
+
     private String generateShareLink(Long postId) {
         return IMG_URL + postId;
     }

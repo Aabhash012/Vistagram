@@ -13,7 +13,6 @@ public class PostMapper {
 
         boolean likedByCurrentUser =
                 likedPostIds != null && likedPostIds.contains(post.getId());
-
         return PostDto.builder()
                 .id(post.getId())
                 .username(post.getUser().getUsername())
@@ -24,6 +23,7 @@ public class PostMapper {
                 .createdAt(post.getCreatedAt())
                 .likeCount(post.getLikeCount())
                 .shareCount(post.getShareCount())
+                .commentCount(post.getCommentCount())
                 .likedByCurrentUser(likedByCurrentUser)
                 .build();
     }

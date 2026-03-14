@@ -2,30 +2,41 @@ package com.vistagram.app.api.shell;
 
 import com.vistagram.app.api.request.AddCommentRequest;
 import com.vistagram.app.api.response.CommentResponse;
-import com.vistagram.app.api.response.UserDetailResponse;
 import com.vistagram.app.domain.CommentDto;
 import com.vistagram.app.service.Interface.CommentService;
-import com.vistagram.app.service.Interface.LikeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.vistagram.app.utils.Constants.ApiRoutes.Comment.COMMENT_SHELL;
+import static com.vistagram.app.utils.Constants.ApiRoutes.Comment.*;
+import static com.vistagram.app.utils.Constants.ApiRoutes.Post.POST_SHELL;
 
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(COMMENT_SHELL)
+@RequestMapping(POST_SHELL)
 public class CommentController {
+
     private final CommentService commentService;
-    @PostMapping
-    public ResponseEntity<CommentResponse> addComment(@RequestParam("userId") Long userId,
-                                                      @RequestBody AddCommentRequest addCommentRequest){
 
-        CommentDto commentDto = AddCommentRequest.toDto(addCommentRequest);
-        commentDto = commentService.addComment(commentDto,userId);
-        CommentResponse commentResponse = CommentResponse.fromDto(commentDto);
-        return ResponseEntity.ok(commentResponse);
+    @PostMapping(ADD_COMMENT)
+    public ResponseEntity<CommentResponse> addComment(
+            @RequestParam("userId") Long userId,
+            @RequestBody @Valid AddCommentRequest request) {
 
+        CommentDto dto = AddCommentRequest.toDto(request);
+        CommentDto savedComment = commentService.addComment(dto, userId);
+        return ResponseEntity.ok(CommentResponse.fromDto(savedComment));
+    }
+    @GetMapping(GET_POST_COMMENTS)
+    public ResponseEntity<Page<CommentResponse>> getComments(
+            @PathVariable Long postId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<CommentDto> comments = commentService.getComments(postId, page, size);
+        return ResponseEntity.ok(comments.map(CommentResponse::fromDto));
     }
 }

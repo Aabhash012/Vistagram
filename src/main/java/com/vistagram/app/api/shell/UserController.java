@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import static com.vistagram.app.utils.Constants.ApiRoutes.User.USER_SHELL;
-import static com.vistagram.app.utils.Constants.ApiRoutes.User.SEARCH_USER;
+import static com.vistagram.app.utils.Constants.ApiRoutes.User.SEARCH_USERS;
 import static com.vistagram.app.utils.Constants.ApiRoutes.User.GET_USER_PROFILE;
 import static com.vistagram.app.utils.Constants.ApiRoutes.User.UPDATE_USER_PROFILE;
 
@@ -30,6 +30,7 @@ public class UserController {
 
     @GetMapping(GET_USER_PROFILE)
     public ResponseEntity<UserDetailResponse> getUserProfile(@PathVariable Long userId) {
+
         UserDto userDto = userService.getUserProfile(userId);
         UserDetailResponse userDetailResponse = UserDetailResponse.fromUserDto(userDto);
         return ResponseEntity.ok(userDetailResponse);
@@ -47,7 +48,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUserDetailResponse);
     }
 
-    @GetMapping(SEARCH_USER)
+    @GetMapping(SEARCH_USERS)
     public ResponseEntity<Page<UserDetailResponse>> searchUsers(
             @RequestParam("query") String query,
             @RequestParam(value = "page", defaultValue = "0") int page,

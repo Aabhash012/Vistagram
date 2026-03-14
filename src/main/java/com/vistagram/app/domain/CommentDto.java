@@ -1,7 +1,5 @@
 package com.vistagram.app.domain;
 
-import com.vistagram.app.api.response.CommentResponse;
-import com.vistagram.app.api.response.PostDetailResponse;
 import lombok.*;
 
 import java.time.LocalDateTime;
