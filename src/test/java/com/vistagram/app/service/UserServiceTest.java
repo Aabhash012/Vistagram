@@ -35,18 +35,13 @@ class UserServiceTest {
 
     @Test
     void getUserProfile_ShouldReturnUser() {
-        // Arrange
+
         User user = new User();
         user.setId(1L);
         user.setUsername("testuser");
-
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
-        // Act
         UserDto result = userService.getUserProfile(1L);
-
-        // Assert
-        assertEquals("testuser", result.getUsername());
+        assertEquals("testuser", result.getUserName());
         verify(userRepository).findById(1L);
     }
 
@@ -58,56 +53,43 @@ class UserServiceTest {
 
     @Test
     void updateUserProfile_ShouldUpdateUsername() {
-        // Arrange
+
         User existingUser = new User();
         existingUser.setId(1L);
         existingUser.setUsername("oldname");
-
         UpdateUserDto updateDto = new UpdateUserDto();
         updateDto.setUsername("newname");
-
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
         when(userRepository.existsByUsername("newname")).thenReturn(false);
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        // Act
         UserDto result = userService.updateUserProfile(updateDto);
-
-        // Assert
-        assertEquals("newname", result.getUsername());
+        assertEquals("newname", result.getUserName());
         verify(userRepository).save(any(User.class));
     }
 
     @Test
     void updateUserProfile_ShouldThrowWhenUsernameTaken() {
+
         User existingUser = new User();
         existingUser.setId(1L);
         existingUser.setUsername("oldname");
-
         UpdateUserDto updateDto = new UpdateUserDto();
         updateDto.setUsername("takenname");
-
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
         when(userRepository.existsByUsername("takenname")).thenReturn(true);
-
         assertThrows(BadRequestException.class, () -> userService.updateUserProfile(updateDto));
     }
 
     @Test
     void searchUsers_ShouldReturnMatchingUsers() {
-        // Arrange
+
         User user = new User();
         user.setUsername("testuser");
         Page<User> userPage = new PageImpl<>(Collections.singletonList(user));
-
         when(userRepository.searchByUsername(anyString(), any())).thenReturn(userPage);
-
-        // Act
         Page<UserDto> result = userService.searchUsers("test", 0, 10);
-
-        // Assert
         assertEquals(1, result.getTotalElements());
-        assertEquals("testuser", result.getContent().get(0).getUsername());
+        assertEquals("testuser", result.getContent().get(0).getUserName());
     }
 
     @Test

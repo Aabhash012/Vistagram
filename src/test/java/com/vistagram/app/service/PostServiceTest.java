@@ -29,6 +29,7 @@ class PostServiceTest {
 
     @Test
     void createPost_ShouldSaveAndReturnPost() {
+
         MultipartFile file = mock(MultipartFile.class);
         when(fileStorageService.storeFile(any())).thenReturn("test.jpg");
 
@@ -43,16 +44,17 @@ class PostServiceTest {
 
     @Test
     void getPostById_ShouldReturnPostWhenExists() {
+
         Post post = new Post();
         post.setId(1L);
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
-
         PostDto result = postService.getPostById(1L);
         assertEquals(1L, result.getId());
     }
 
     @Test
     void getPostById_ShouldThrowWhenNotFound() {
+
         when(postRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> postService.getPostById(1L));
     }
