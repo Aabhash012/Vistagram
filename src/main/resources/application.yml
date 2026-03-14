@@ -34,3 +34,7 @@ logging:
 
 file:
   upload-dir: uploads
+
+ai:
+  api:
+    key: abc

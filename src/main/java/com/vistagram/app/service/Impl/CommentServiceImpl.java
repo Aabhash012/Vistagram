@@ -6,6 +6,7 @@ import com.vistagram.app.repository.PostRepository;
 import com.vistagram.app.repository.entity.Comments;
 import com.vistagram.app.repository.entity.Post;
 import com.vistagram.app.repository.entity.User;
+import com.vistagram.app.service.Interface.AiModerationService;
 import com.vistagram.app.service.Interface.CommentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,16 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final AiModerationService aiModerationService;
 
     @Override
     @Transactional
     public CommentDto addComment(CommentDto commentDto, Long userId) {
 
+        boolean isToxic = aiModerationService.isToxic(commentDto.getComment());
+        if (isToxic) {
+            throw new RuntimeException("Comment rejected due to toxic content.");
+        }
         Comments comment = Comments.builder()
                 .comment(commentDto.getComment())
                 .post(Post.builder().id(commentDto.getPostId()).build())
