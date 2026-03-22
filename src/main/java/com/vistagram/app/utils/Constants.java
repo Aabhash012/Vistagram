@@ -1,5 +1,7 @@
 package com.vistagram.app.utils;
 
+import java.util.Set;
+
 public class Constants {
 
     public static final String IMG_URL = "https://vistagram.app/posts/";
@@ -37,5 +39,17 @@ public class Constants {
             public static final String ADD_COMMENT = "/{postId}/comments";
             public static final String GET_POST_COMMENTS = "/{postId}/comments";
         }
+    }
+    public class ModerationConstants {
+
+        public static final Set<String> TOXIC_WORDS = Set.of(
+                "stupid",
+                "idiot",
+                "dumb",
+                "hate",
+                "loser",
+                "moron",
+                "pathetic"
+        );
     }
 }
